@@ -1,0 +1,42 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+jar {
+    baseName = 'jvmperformance'
+    version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+
+dependencies {
+    compile group: 'org.eclipse.persistence', name: 'javax.persistence', version: '2.1.0'
+//    compile('org.eclipse.persistence:eclipselink:2.5.0')
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'JVM Example',
+                'Implementation-Version': jar.version,
+                'Main-Class': 'net.learning.jvmperformance.batching.StockPriceHistoryBatcher'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+artifacts {
+    archives fatJar
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.7'
+}
